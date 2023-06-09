@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:             TheMarketer
+ * Plugin Name:             TheMarketer WP
  * Plugin URI:              https://themarketer.com/integrations/wordpress
  * Description:             TheMarketer - WordPress Version
  * Version:                 1.0.0
