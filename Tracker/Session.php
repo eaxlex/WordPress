@@ -9,7 +9,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 class Session {
     private static $init = null;
@@ -41,7 +41,7 @@ class Session {
                 self::$uid = uniqid();
                 setcookie('__sm__uid', self::$uid, strtotime('+365 days'), COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
             } else {
-                self::$uid = $_COOKIE['__sm__uid'];
+                self::$uid = sanitize_text_field($_COOKIE['__sm__uid']);
             }
         }
 

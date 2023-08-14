@@ -8,7 +8,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 class Events
 {
@@ -62,81 +62,6 @@ class Events
             self::$init = new self();
         }
         return self::$init;
-    }
-
-    public static function loader()
-    {
-        $lines = array();
-
-        $key = Config::getKey();
-
-        $lines[] = vsprintf(Config::loader, array( $key ));
-
-        $lines[] = 'window.MktrDebug = function () { if (typeof dataLayer != undefined) { for (let i of dataLayer) { console.log("Mktr","Google",i); } } };';
-        $lines[] = '';
-        $wh =  array(Config::space, implode(Config::space, $lines));
-        $rep = array("%space%","%implode%");
-        /** @noinspection BadExpressionStatementJS */
-        /** @noinspection JSUnresolvedVariable */
-        echo ent2ncr(str_replace($rep, $wh, '<!-- Mktr Script Start -->%space%<script type="text/javascript">%space%%implode%%space%</script>%space%<!-- Mktr Script END -->'));
-    }
-
-    public function loadEvents()
-    {
-        $loadJS = $lines = array();
-
-        foreach (self::actions as $key=>$value) {
-            if ($key() || $key === 'is_home' && is_front_page()) {
-                $lines[] = "dataLayer.push(".self::getEvent($value)->toJson().");";
-                break;
-            }
-        }
-
-        $clear = WC()->session->get("ClearMktr");
-
-        if ($clear === null) {
-            $clear = array();
-        }
-
-        foreach (self::observerGetEvents as $event=>$Name) {
-            $eventData = WC()->session->get($event);
-            if (!empty($eventData)) {
-                foreach ($eventData as $key=>$value) {
-                    $lines[] = "dataLayer.push(".self::getEvent($Name[1], $value)->toJson().");";
-                    if (!$Name[0]) {
-                        $clear[$event][$key] = $key;
-                    }
-                }
-
-                if ($Name[0]) {
-                    //WC()->session->set($event, array());
-                    $loadJS[$event] = true;
-                } /** @noinspection PhpStatementHasEmptyBodyInspection */ else {
-                    // $clear[$event][$key] = "clear";
-                    // WC()->session->set($event, array());
-                }
-            }
-        }
-
-        $baseURL = Config::getBaseURL();
-
-        foreach ($loadJS as $k=>$v) {
-            $lines[] = '(function(){ let add = document.createElement("script"); add.async = true; add.src = "'.esc_js($baseURL).'mktr/api/'.esc_js($k).'/"; let s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(add,s); })();';
-        }
-
-        if (!empty($clear)) {
-            WC()->session->set("ClearMktr", $clear);
-
-            $lines[] = '(function(){ let add = document.createElement("script"); add.async = true; add.src = "'.esc_js($baseURL).'mktr/api/clearEvents/"; let s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(add,s); })();';
-        }
-
-        $lines[] = 'setTimeout(window.MktrDebug, 1000);';
-
-        $wh =  array(Config::space, implode(Config::space, $lines));
-        $rep = array("%space%","%implode%");
-        /** @noinspection BadExpressionStatementJS */
-        /** @noinspection JSUnresolvedVariable */
-        echo ent2ncr(str_replace($rep, $wh, '<!-- Mktr Script Start -->%space%<script type="text/javascript">%space%%implode%%space%</script>%space%<!-- Mktr Script END -->'));
     }
 
     public static function build()

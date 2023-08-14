@@ -4,17 +4,17 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticWpMktr
+class ComposerStaticMktrWp
 {
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'M' => 
         array (
-            'WpMktr\\Tracker\\' => 15
+            'MktrWp\\Tracker\\' => 15
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'WpMktr\\Tracker\\' => 
+        'MktrWp\\Tracker\\' => 
         array (
             0 => __DIR__ . '/../..' . '/Tracker',
         )
@@ -27,9 +27,9 @@ class ComposerStaticWpMktr
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticWpMktr::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticWpMktr::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticWpMktr::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticMktrWp::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticMktrWp::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticMktrWp::$classMap;
 
         }, null, ClassLoader::class);
     }

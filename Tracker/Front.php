@@ -8,7 +8,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 class Front
 {
@@ -217,11 +217,14 @@ class Front
 
         $lines[] = 'window.MktrDebug = function () { if (typeof dataLayer != undefined) { for (let i of dataLayer) { console.log("Mktr","Google",i); } } };';
         $lines[] = '';
-        $wh =  array(Config::space, implode(Config::space, $lines));
-        $rep = array("%space%","%implode%");
+        // $wh =  array(Config::space, implode(Config::space, $lines));
+        // $rep = array("%space%","%implode%");
         /** @noinspection BadExpressionStatementJS */
         /** @noinspection JSUnresolvedVariable */
-        echo ent2ncr(str_replace($rep, $wh, '<!-- Mktr Script Start -->%space%<script type="text/javascript">%space%%implode%%space%</script>%space%<!-- Mktr Script END -->'));
+        // echo ent2ncr(str_replace($rep, $wh, '<!-- Mktr Script Start -->%space%<script type="text/javascript">%space%%implode%%space%</script>%space%<!-- Mktr Script END -->'));
+        wp_register_script( 'mktr_loader', '' );
+        wp_enqueue_script( 'mktr_loader' );
+        wp_add_inline_script( 'mktr_loader', implode(Config::space, $lines) );
     }
 
     public static function schemaValidate($array, $schema)
@@ -324,11 +327,14 @@ class Front
 
         $lines[] = 'setTimeout(window.MktrDebug, 1000);';
 
-        $wh =  array(Config::space, implode(Config::space, $lines));
-        $rep = array("%space%","%implode%");
+        // $wh =  array(Config::space, implode(Config::space, $lines));
+        // echo ent2ncr(str_replace($rep, $wh, '<!-- Mktr Script Start -->%space%<script type="text/javascript">%space%%implode%%space%</script>%space%<!-- Mktr Script END -->'));
+        // $rep = array("%space%","%implode%");
         /** @noinspection BadExpressionStatementJS */
         /** @noinspection JSUnresolvedVariable */
-        echo ent2ncr(str_replace($rep, $wh, '<!-- Mktr Script Start -->%space%<script type="text/javascript">%space%%implode%%space%</script>%space%<!-- Mktr Script END -->'));
+        wp_register_script( 'mktr_loadEvents', '' );
+        wp_enqueue_script( 'mktr_loadEvents' );
+        wp_add_inline_script( 'mktr_loadEvents', implode(Config::space, $lines) );
     }
 
 }

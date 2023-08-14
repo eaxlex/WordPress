@@ -2,7 +2,7 @@
 Contributors: themarketer2023
 Tags: WordPress, theMarketer, Email marketing, Loyalty Program
 Requires at least: 4.6
-Tested up to: 6.1
+Tested up to: 6.3
 Requires PHP: 5.6
 Stable tag: 1.0.0
 License: GPLv2
@@ -37,7 +37,7 @@ theMarketer pricing starts from as low as 5 EUR/month. Subscription prices are c
 
 == Installation ==
 
-1. Upload the entire 'wp-mktr' folder to the '/wp-content/plugins/' directory
+1. Upload the entire 'mktr-wp' folder to the '/wp-content/plugins/' directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Screenshots ==

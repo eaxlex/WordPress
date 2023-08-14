@@ -8,10 +8,10 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker\Routes;
+namespace MktrWp\Tracker\Routes;
 
-use WpMktr\Tracker\Api;
-use WpMktr\Tracker\Session;
+use MktrWp\Tracker\Api;
+use MktrWp\Tracker\Session;
 
 class setEmail
 {

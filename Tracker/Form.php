@@ -8,7 +8,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 class Form
 {
@@ -140,7 +140,7 @@ class Form
 
         $out[] = '    </table>
     <p class="submit">
-	    <input type="hidden" id="'.Config::$name.'" name="'.Config::$name.'[valid]" value="'.Config::$name.'_valid" />
+	    <input type="hidden" id="mktr_check" name="mktr_check" value="'. \wp_create_nonce('mktr_check') .'" />
 		<button class="button-primary" type="submit" value="'.self::$save_button.'">'.self::$save_button.'</button>
     </p>
 </form>';
@@ -149,7 +149,7 @@ class Form
             self::clean();
         }
 
-        return ent2ncr(implode(PHP_EOL, $out));
+        return \ent2ncr(implode(PHP_EOL, $out));
     }
 
     public static function clean()

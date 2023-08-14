@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'WpMktr\\Tracker\\' => array($baseDir . '/Tracker')
+    'MktrWp\\Tracker\\' => array($baseDir . '/Tracker')
 );

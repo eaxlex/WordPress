@@ -8,10 +8,10 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker\Routes;
+namespace MktrWp\Tracker\Routes;
 
-use WpMktr\Tracker\Front;
-use WpMktr\Tracker\Session;
+use MktrWp\Tracker\Front;
+use MktrWp\Tracker\Session;
 
 class loadEvents
 {

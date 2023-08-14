@@ -6,35 +6,33 @@
  * Version:                 1.0.0
  * Author:                  themarketer.com
  * Author URI:              https://themarketer.com
- * Text Domain:             wp-mktr
+ * Text Domain:             mktr-wp
  * License:                 GPL2
  * License URI:             https://www.gnu.org/licenses/gpl-2.0.html
  *
- * @package wp-mktr
+ * @package mktr-wp
  */
 
 
 defined('ABSPATH') OR exit('No direct script access allowed');
 
-if (!defined('WP_MKTR'))
+if (!defined('MKTR_WP'))
 {
-    define('WP_MKTR', __FILE__);
+    define('MKTR_WP', __FILE__);
 }
 
-if (!defined('WP_MKTR_DIR'))
+if (!defined('MKTR_WP_DIR'))
 {
-    define('WP_MKTR_DIR', dirname(__FILE__));
+    define('MKTR_WP_DIR', dirname(__FILE__));
 }
 
 
-if (!defined('WP_MKTR_BASE'))
+if (!defined('MKTR_WP_BASE'))
 {
-    define('WP_MKTR_BASE', plugin_basename(WP_MKTR));
+    define('MKTR_WP_BASE', plugin_basename(MKTR_WP));
 }
 
-require_once WP_MKTR_DIR . '/vendor/autoload.php';
-
-use WpMktr\Tracker\Run;
+require_once MKTR_WP_DIR . '/vendor/autoload.php';
 
 /** @noinspection PhpFullyQualifiedNameUsageInspection */
-Run::init();
+\MktrWp\Tracker\Run::init();

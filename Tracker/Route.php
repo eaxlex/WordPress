@@ -8,11 +8,11 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
-use WpMktr\Tracker\Routes\clearEvents;
-use WpMktr\Tracker\Routes\loadEvents;
-use WpMktr\Tracker\Routes\setEmail;
+use MktrWp\Tracker\Routes\clearEvents;
+use MktrWp\Tracker\Routes\loadEvents;
+use MktrWp\Tracker\Routes\setEmail;
 
 class Route
 {
@@ -44,7 +44,7 @@ class Route
 
             $run = self::$page();
 
-            echo $run->execute();
+            echo esc_js($run->execute());
             
             header("Content-type: application/javascript; charset=utf-8");
             header("HTTP/1.1 200 OK");

@@ -8,7 +8,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 class Admin
 {
@@ -26,13 +26,10 @@ class Admin
 
     public static function load()
     {
-        Form::initProcess();
-
         add_filter('plugin_action_links_'.Config::getPluginBase(), array(self::init(), 'action_links'));
         add_filter('plugin_row_meta', array(self::init(), 'extra_links'), 10, 2);
         add_action('admin_menu', array(self::init(), 'menu'));
         add_action('admin_notices', array(self::init(), 'notice'));
-
         add_action('mailpoet_segment_subscribed', array(self::init(), 'mailpoet_subscription'), 10, 2);
         add_action('mailpoet_subscription_before_subscribe', array(self::init(), 'mailpoet_bf_subscription'), 10, 3);
     }
@@ -71,7 +68,7 @@ class Admin
                     ' is-dismissible"><p>'.esc_html($value['message']).'</p></div>';
             }
 
-            echo implode(PHP_EOL, $out);
+            echo esc_html(implode(PHP_EOL, $out));
         }
     }
 
@@ -79,7 +76,7 @@ class Admin
     {
         return array_merge(
             array(
-                'settings' => '<a href="'. admin_url('admin.php?page=wp_mktr_tracker') . '" target="_blank"> Settings</a>'
+                'settings' => '<a href="'. admin_url('admin.php?page=mktr_wp_tracker') . '" target="_blank"> Settings</a>'
             ),
             $links
         );
@@ -104,7 +101,7 @@ class Admin
             'TheMarketer',
             'TheMarketer',
             'manage_options',
-            'wp_mktr_tracker',
+            'mktr_wp_tracker',
             array(self::init(), 'tracker'),
             Config::getSVG(),
             2
@@ -113,6 +110,7 @@ class Admin
 
     public static function tracker()
     {
+        Form::initProcess();
         Form::formFields(
             array(
                 'tit-set' => array(
@@ -160,6 +158,6 @@ class Admin
             )
         );
 
-        echo Form::getForm();
+        echo ent2ncr(Form::getForm());
     }
 }

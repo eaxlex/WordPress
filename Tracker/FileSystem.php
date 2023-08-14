@@ -9,7 +9,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 class FileSystem
 {
@@ -44,16 +44,23 @@ class FileSystem
     /** @noinspection PhpUnused */
     public static function writeFile($fName, $content, $mode = 'w+')
     {
-        self::$lastPath = self::getPath() . $fName;
+        $path = self::getPath();
 
+        if (!file_exists($path)) { wp_mkdir_p($path); }
+
+        self::$lastPath = $path . $fName;
+        file_put_contents(self::$lastPath, $content);
+
+        /*
         $file = fopen(self::$lastPath, $mode);
         fwrite($file, $content);
         fclose($file);
+        */
 
         self::$status[] = [
-            'path' => self::getPath(),
+            'path' => $path,
             'fileName' => $fName,
-            'fullPath' => self::getPath() . $fName,
+            'fullPath' => self::$lastPath,
             'status' => true
         ];
 

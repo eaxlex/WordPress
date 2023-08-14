@@ -8,7 +8,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 class Run
 {
@@ -16,8 +16,8 @@ class Run
 
     public function __construct()
     {
-	    add_action( 'activate_' . WP_MKTR_BASE, [$this, 'Install']);
-	    add_action( 'deactivate_' . WP_MKTR_BASE, [$this, 'unInstall']);
+	    add_action( 'activate_' . MKTR_WP_BASE, [$this, 'Install']);
+	    add_action( 'deactivate_' . MKTR_WP_BASE, [$this, 'unInstall']);
 
         if (is_admin()) {
             Admin::load();

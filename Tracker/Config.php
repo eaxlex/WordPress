@@ -9,7 +9,7 @@
  * @docs        https://themarketer.com/resources/api
  */
 
-namespace WpMktr\Tracker;
+namespace MktrWp\Tracker;
 
 /**
  * @method getStatus()
@@ -38,14 +38,14 @@ j.src = "https://t.themarketer.com/t/j/" + i; f.parentNode.insertBefore(j, f); }
     ];
 
     const configNames = array(
-        'status' => 'mktr_tracker/tracker/status',
-        'tracking_key' => 'mktr_tracker/tracker/tracking_key',
-        'rest_key' => 'mktr_tracker/tracker/rest_key',
-        'customer_id'=>'mktr_tracker/tracker/customer_id',
-        'opt_in' => 'mktr_tracker/tracker/opt_in',
-        'push_status' => 'mktr_tracker/tracker/push_status',
-        'google_status' => 'mktr_google/google/status',
-        'google_tagCode' => 'mktr_google/google/tagCode'
+        'status' => 'tracker/tracker/status',
+        'tracking_key' => 'tracker/tracker/tracking_key',
+        'rest_key' => 'tracker/tracker/rest_key',
+        'customer_id'=>'tracker/tracker/customer_id',
+        'opt_in' => 'tracker/tracker/opt_in',
+        'push_status' => 'tracker/tracker/push_status',
+        'google_status' => 'google/google/status',
+        'google_tagCode' => 'google/google/tagCode'
     );
 
     const configDefaults = array(
@@ -135,15 +135,19 @@ importScripts("https://t.themarketer.com/firebase.js");';
     }
 
     public static function POST($key) {
-        if (Config::$name === $key && isset($_POST[$key]) && is_array($_POST[$key])) {
-            $list = [];
-            foreach ($_POST[$key] as $k=>$v) {
-                $list[$key][$k] = sanitize_text_field($v);
+        if (isset($_POST[$key]) && \wp_verify_nonce($_POST['mktr_check'], 'mktr_check')) {
+            if (Config::$name === $key && isset($_POST[$key]) && is_array($_POST[$key])) {
+                $list = [];
+                foreach ($_POST[$key] as $k=>$v) {
+                    if ($key !== 'mktr_check') {
+                        $list[$key][$k] = esc_textarea($v);
+                    }
+                }
+                return $list;
+            } else {
+                return esc_textarea($_POST[$key]);
             }
-            return $list;
-        } else {
-            return sanitize_text_field($_POST[$key]);
-        }   
+        }
     }
 
     public static function REQUEST($key) {
@@ -203,12 +207,12 @@ importScripts("https://t.themarketer.com/firebase.js");';
 
         if (array_key_exists($name, Config::configNames))
         {
-            self::$configValues[$name] = get_option(Config::configNames[$name], null);
+            self::$configValues[$name] = get_option('mktr_wp_'.Config::configNames[$name], null);
 
             if (self::$configValues[$name] === null)
             {
-                update_option(Config::configNames[$name], Config::configDefaults[$name]);
-                self::$configValues[$name] = get_option(Config::configNames[$name], null);
+                update_option('mktr_wp_'.Config::configNames[$name], Config::configDefaults[$name]);
+                self::$configValues[$name] = get_option('mktr_wp_'.Config::configNames[$name], null);
             }
 
             if (in_array($name, array('color','size','brand')))
@@ -226,8 +230,8 @@ importScripts("https://t.themarketer.com/firebase.js");';
     {
         if (array_key_exists($name, Config::configNames))
         {
-            update_option(Config::configNames[$name], $value);
-            self::$configValues[$name] = get_option(Config::configNames[$name], null);
+            update_option('mktr_wp_'.Config::configNames[$name], $value);
+            self::$configValues[$name] = get_option('mktr_wp_'.Config::configNames[$name], null);
         } else {
             self::$configValues[$name] = $value;
         }
@@ -245,7 +249,7 @@ importScripts("https://t.themarketer.com/firebase.js");';
     {
         if (self::$MKTR == null)
         {
-            self::$MKTR = WP_MKTR;
+            self::$MKTR = MKTR_WP;
         }
 
         return self::$MKTR;
@@ -255,7 +259,7 @@ importScripts("https://t.themarketer.com/firebase.js");';
     {
         if (self::$MKTR_DIR == null)
         {
-            self::$MKTR_DIR = WP_MKTR_DIR . '/';
+            self::$MKTR_DIR = MKTR_WP_DIR . '/';
         }
 
         return self::$MKTR_DIR;
@@ -266,7 +270,7 @@ importScripts("https://t.themarketer.com/firebase.js");';
     {
         if (self::$MKTR_PLUGIN == null)
         {
-            self::$MKTR_PLUGIN = dirname(plugin_basename(WP_MKTR));
+            self::$MKTR_PLUGIN = dirname(plugin_basename(MKTR_WP));
         }
 
         return self::$MKTR_PLUGIN;
@@ -277,7 +281,7 @@ importScripts("https://t.themarketer.com/firebase.js");';
     {
         if (self::$MKTR_PLUGIN_BASENAME == null)
         {
-            self::$MKTR_PLUGIN_BASENAME = plugin_basename(WP_MKTR);
+            self::$MKTR_PLUGIN_BASENAME = plugin_basename(MKTR_WP);
         }
 
         return self::$MKTR_PLUGIN_BASENAME;
