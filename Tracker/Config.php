@@ -135,7 +135,7 @@ importScripts("https://t.themarketer.com/firebase.js");';
     }
 
     public static function POST($key) {
-        if (isset($_POST[$key]) && \wp_verify_nonce(sanitize_text_field( wp_unslash ($_POST['mktr_check']))), 'mktr_check')) {
+        if (isset($_POST[$key]) && \wp_verify_nonce(sanitize_text_field( wp_unslash ($_POST['mktr_check'])), 'mktr_check')) {
             if (Config::$name === $key && isset($_POST[$key]) && is_array($_POST[$key])) {
                 $list = [];
                 foreach ($_POST[$key] as $k=>$v) {
