@@ -1,11 +1,16 @@
 <?php
 /**
- * @copyright   Copyright (c) 2023 TheMarketer.com
- * @project     TheMarketer.com
- * @website     https://themarketer.com/
- * @author      Alexandru Buzica (EAX LEX S.R.L.) <b.alex@eax.ro>
- * @license     http://opensource.org/licenses/osl-3.0.php - Open Software License (OSL 3.0)
- * @docs        https://themarketer.com/resources/api
+ * Plugin Name:             TheMarketer WP
+ * Plugin URI:              https://themarketer.com/integrations/wordpress
+ * Description:             TheMarketer - WordPress Version
+ * Version:                 1.0.0
+ * Author:                  themarketer.com
+ * Author URI:              https://themarketer.com
+ * Text Domain:             mktr-wp
+ * License:                 GPL2
+ * License URI:             https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * @package mktr-wp
  */
 
 namespace MktrWp\Tracker;
@@ -14,61 +19,56 @@ use MktrWp\Tracker\Routes\clearEvents;
 use MktrWp\Tracker\Routes\loadEvents;
 use MktrWp\Tracker\Routes\setEmail;
 
-class Route
-{
-    private static $init = null;
+class Route {
 
-    private static $allMethods = null;
+	private static $init = null;
 
-    public static function init() {
-        if (self::$init == null) {
-            self::$init = new self();
-        }
-        return self::$init;
-    }
+	private static $allMethods = null;
 
-    public static function checkPage($p)
-    {
-        if (self::$allMethods == null)
-        {
-            foreach (get_class_methods(self::init()) as $value) {
-                self::$allMethods[strtolower($value)] = $value;
-            }
-        }
+	public static function init() {
+		if ( self::$init == null ) {
+			self::$init = new self();
+		}
+		return self::$init;
+	}
 
-        $p = strtolower($p);
+	public static function checkPage( $p ) {
+		if ( self::$allMethods == null ) {
+			foreach ( get_class_methods( self::init() ) as $value ) {
+				self::$allMethods[ strtolower( $value ) ] = $value;
+			}
+		}
 
-        if(isset(self::$allMethods[$p]))
-        {
-            $page = self::$allMethods[$p];
+		$p = strtolower( $p );
 
-            $run = self::$page();
+		if ( isset( self::$allMethods[ $p ] ) ) {
+			$page = self::$allMethods[ $p ];
 
-            echo esc_js($run->execute());
-            
-            header("Content-type: application/javascript; charset=utf-8");
-            header("HTTP/1.1 200 OK");
-            http_response_code(201);
-            header("Status: 200 All rosy");
-            Session::save();
-            exit();
-        }
-    }
+			$run = self::$page();
 
-    /* Pages */
-    /** @noinspection PhpUnused */
-    public static function loadEvents()
-    {
-        return loadEvents::init();
-    }
+			echo esc_js( $run->execute() );
 
-    /** @noinspection PhpUnused */
-    public static function clearEvents() {
-        return clearEvents::init();
-    }
+			header( 'Content-type: application/javascript; charset=utf-8' );
+			header( 'HTTP/1.1 200 OK' );
+			http_response_code( 201 );
+			header( 'Status: 200 All rosy' );
+			Session::save();
+			exit();
+		}
+	}
 
-    public static function setEmail()
-    {
-        return setEmail::init();
-    }
+	/* Pages */
+	/** @noinspection PhpUnused */
+	public static function loadEvents() {
+		return loadEvents::init();
+	}
+
+	/** @noinspection PhpUnused */
+	public static function clearEvents() {
+		return clearEvents::init();
+	}
+
+	public static function setEmail() {
+		return setEmail::init();
+	}
 }

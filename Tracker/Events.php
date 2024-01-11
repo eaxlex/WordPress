@@ -10,117 +10,112 @@
 
 namespace MktrWp\Tracker;
 
-class Events
-{
-    private static $init = null;
-    private static $shName = null;
-    private static $data = array();
+class Events {
 
-    private static $assets = array();
+	private static $init   = null;
+	private static $shName = null;
+	private static $data   = array();
 
-    public const actions = [
-        "is_home" => "__sm__view_homepage",
-        "is_search" => "__sm__search"
-    ];
+	private static $assets = array();
 
-    public const observerGetEvents = [
-        "setEmail"=> [true, "__sm__set_email"],
-        "setPhone"=> [false, "__sm__set_phone"]
-    ];
+	public const actions = array(
+		'is_home'   => '__sm__view_homepage',
+		'is_search' => '__sm__search',
+	);
 
-    public const eventsName = [
-        "__sm__view_homepage" =>"HomePage",
-        "__sm__search" => "Search",
-        "__sm__set_email" => "setEmail",
-        "__sm__set_phone" => "setPhone"
-    ];
+	public const observerGetEvents = array(
+		'setEmail' => array( true, '__sm__set_email' ),
+		'setPhone' => array( false, '__sm__set_phone' ),
+	);
 
-    public const eventsSchema = [
-        "HomePage" => null,
-        "Search" => [
-            "search_term" => "search_term"
-        ],
+	public const eventsName = array(
+		'__sm__view_homepage' => 'HomePage',
+		'__sm__search'        => 'Search',
+		'__sm__set_email'     => 'setEmail',
+		'__sm__set_phone'     => 'setPhone',
+	);
 
-        "setPhone" => [
-            "phone" => "phone"
-        ],
+	public const eventsSchema = array(
+		'HomePage' => null,
+		'Search'   => array(
+			'search_term' => 'search_term',
+		),
 
-        "setEmail" => [
-            "email_address" => "email_address",
-            "firstname" => "firstname",
-            "lastname" => "lastname"
-        ]
-    ];
-    /**
-     * @var array
-     */
-    private static $bMultiCat;
+		'setPhone' => array(
+			'phone' => 'phone',
+		),
 
-    public static function init()
-    {
-        if (self::$init == null) {
-            self::$init = new self();
-        }
-        return self::$init;
-    }
+		'setEmail' => array(
+			'email_address' => 'email_address',
+			'firstname'     => 'firstname',
+			'lastname'      => 'lastname',
+		),
+	);
+	/**
+	 * @var array
+	 */
+	private static $bMultiCat;
 
-    public static function build()
-    {
-        foreach (self::$assets as $key=>$val) {
-            self::$data[$key] = $val;
-        }
-    }
+	public static function init() {
+		if ( self::$init == null ) {
+			self::$init = new self();
+		}
+		return self::$init;
+	}
 
-    public static function schemaValidate($array, $schema)
-    {
-        $newOut = [];
+	public static function build() {
+		foreach ( self::$assets as $key => $val ) {
+			self::$data[ $key ] = $val;
+		}
+	}
 
-        foreach ($array as $key=>$val) {
-            if (isset($schema[$key])) {
-                if (is_array($val)) {
-                    $newOut[$schema[$key]["@key"]] = self::schemaValidate($val, $schema[$key]["@schema"]);
-                } else {
-                    $newOut[$schema[$key]] = $val;
-                }
-            } elseif (is_array($val)) {
-                $newOut[] = self::schemaValidate($val, $schema);
-            }
-        }
+	public static function schemaValidate( $array, $schema ) {
+		$newOut = array();
 
-        return $newOut;
-    }
+		foreach ( $array as $key => $val ) {
+			if ( isset( $schema[ $key ] ) ) {
+				if ( is_array( $val ) ) {
+					$newOut[ $schema[ $key ]['@key'] ] = self::schemaValidate( $val, $schema[ $key ]['@schema'] );
+				} else {
+					$newOut[ $schema[ $key ] ] = $val;
+				}
+			} elseif ( is_array( $val ) ) {
+				$newOut[] = self::schemaValidate( $val, $schema );
+			}
+		}
 
-    public static function getEvent($Name, $eventData = [])
-    {
-        if (empty(self::eventsName[$Name])) {
-            return false;
-        }
+		return $newOut;
+	}
 
-        self::$shName = self::eventsName[$Name];
+	public static function getEvent( $Name, $eventData = array() ) {
+		if ( empty( self::eventsName[ $Name ] ) ) {
+			return false;
+		}
 
-        self::$data = array(
-            "event" => $Name
-        );
+		self::$shName = self::eventsName[ $Name ];
 
-        self::$assets = array();
+		self::$data = array(
+			'event' => $Name,
+		);
 
-        switch (self::$shName) {
-            case "Search":
-                self::$assets['search_term'] = get_search_query(true);
-                break;
-            default:
-                self::$assets = $eventData;
-        }
+		self::$assets = array();
 
-        self::$assets = self::schemaValidate(self::$assets, self::eventsSchema[self::$shName]);
+		switch ( self::$shName ) {
+			case 'Search':
+				self::$assets['search_term'] = get_search_query( true );
+				break;
+			default:
+				self::$assets = $eventData;
+		}
 
-        self::build();
+		self::$assets = self::schemaValidate( self::$assets, self::eventsSchema[ self::$shName ] );
 
-        return self::init();
-    }
-    
-    public static function toJson()
-    {
-        return json_encode((self::$data === null ? array() : self::$data), JSON_UNESCAPED_SLASHES);
-    }
+		self::build();
+
+		return self::init();
+	}
+
+	public static function toJson() {
+		return json_encode( ( self::$data === null ? array() : self::$data ), JSON_UNESCAPED_SLASHES );
+	}
 }

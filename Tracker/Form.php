@@ -1,173 +1,175 @@
 <?php
 /**
- * @copyright   Copyright (c) 2023 TheMarketer.com
- * @project     TheMarketer.com
- * @website     https://themarketer.com/
- * @author      Alexandru Buzica (EAX LEX S.R.L.) <b.alex@eax.ro>
- * @license     https://opensource.org/licenses/osl-3.0.php - Open Software License (OSL 3.0)
- * @docs        https://themarketer.com/resources/api
+ * Plugin Name:             TheMarketer WP
+ * Plugin URI:              https://themarketer.com/integrations/wordpress
+ * Description:             TheMarketer - WordPress Version
+ * Version:                 1.0.0
+ * Author:                  themarketer.com
+ * Author URI:              https://themarketer.com
+ * Text Domain:             mktr-wp
+ * License:                 GPL2
+ * License URI:             https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * @package mktr-wp
  */
 
 namespace MktrWp\Tracker;
 
-class Form
-{
-    private static $save_button = 'Save changes';
-    private static $form_fields = array();
-    private static $init = null;
+class Form {
 
-    public const defFields = array(
-        'title' => '',
-        'type' => 'text',
-        'default' => '',
-        'description' => '',
-        'holder' => '',
-        'options' => array(
-            array('value' => 0, 'label' => "Disable"),
-            array('value' => 1, 'label' => "Enable")
-        )
-    );
+	private static $save_button = 'Save changes';
+	private static $form_fields = array();
+	private static $init        = null;
 
-    public static function init()
-    {
-        if (self::$init == null) {
-            self::$init = new self();
-        }
+	public const defFields = array(
+		'title'       => '',
+		'type'        => 'text',
+		'default'     => '',
+		'description' => '',
+		'holder'      => '',
+		'options'     => array(
+			array(
+				'value' => 0,
+				'label' => 'Disable',
+			),
+			array(
+				'value' => 1,
+				'label' => 'Enable',
+			),
+		),
+	);
 
-        return self::$init;
-    }
+	public static function init() {
+		if ( self::$init == null ) {
+			self::$init = new self();
+		}
 
-    public static function formFields($fields)
-    {
-        foreach ($fields as $key=>$value) {
-            $fields[$key] = array_merge(self::defFields, $value);
-        }
+		return self::$init;
+	}
 
-        self::$form_fields = array_merge(self::$form_fields, $fields);
+	public static function formFields( $fields ) {
+		foreach ( $fields as $key => $value ) {
+			$fields[ $key ] = array_merge( self::defFields, $value );
+		}
 
-        return self::init();
-    }
+		self::$form_fields = array_merge( self::$form_fields, $fields );
 
-    public static function initProcess()
-    {
-        $data = Config::POST(Config::$name);
-        if (!empty($data)) {
-            $fail = false;
-            foreach ($data[Config::$name] as $key=>$value) {
-                if (in_array($key, array('tracking_key', 'rest_key', 'customer_id', 'google_tagCode')) && empty($value)) {
-                    $fail = $key;
-                }
+		return self::init();
+	}
 
-                Config::setValue($key, $value);
+	public static function initProcess() {
+		$data = Config::POST( Config::$name );
+		if ( ! empty( $data ) ) {
+			$fail = false;
+			foreach ( $data[ Config::$name ] as $key => $value ) {
+				if ( in_array( $key, array( 'tracking_key', 'rest_key', 'customer_id', 'google_tagCode' ) ) && empty( $value ) ) {
+					$fail = $key;
+				}
 
-                if ($key == 'push_status') {
-                    self::pushStatus();
-                }
-            }
+				Config::setValue( $key, $value );
 
-            if ($fail) {
-                Admin::addNotice(
-                    array(
-                        'type' => 'error',
-                        'message'=> 'Please fill are Require(*) fields'
-                    )
-                );
-            } else {
-                Admin::addNotice(
-                    array(
-                        'message'=>'Your settings have been saved.'
-                    )
-                );
-            }
-        }
-    }
+				if ( $key == 'push_status' ) {
+					self::pushStatus();
+				}
+			}
 
-    public static function getForm($clean = false)
-    {
-        $out = array();
+			if ( $fail ) {
+				Admin::addNotice(
+					array(
+						'type'    => 'error',
+						'message' => 'Please fill are Require(*) fields',
+					)
+				);
+			} else {
+				Admin::addNotice(
+					array(
+						'message' => 'Your settings have been saved.',
+					)
+				);
+			}
+		}
+	}
 
-        $out[] = '<form method="POST" action="" enctype="multipart/form-data">
+	public static function getForm( $clean = false ) {
+		$out = array();
+
+		$out[] = '<form method="POST" action="" enctype="multipart/form-data">
     <table class="form-table">';
 
-        foreach (self::$form_fields as $key=>$value) {
-            $out[] = '        <tr valign="top">
+		foreach ( self::$form_fields as $key => $value ) {
+			$out[] = '        <tr valign="top">
             <th scope="row" class="titledesc">
-                <label ' . ($value['type'] != 'title' ? ' for="'.Config::$name.'_'.$key.'"' : '') . '>'.$value['title'].'</label>
+                <label ' . ( $value['type'] != 'title' ? ' for="' . Config::$name . '_' . $key . '"' : '' ) . '>' . $value['title'] . '</label>
             </th>
             <td class="forminp">
                 <fieldset>';
 
-            $value['default'] = ($value['default'] !== '' ? $value['default'] : Config::getValue($key));
+			$value['default'] = ( $value['default'] !== '' ? $value['default'] : Config::getValue( $key ) );
 
-            switch ($value['type']) {
-                case 'title':
-
-                    break;
-                case 'select':
-
-                    $out[] = '<select style="width: 100%;max-width: 20rem;"
-                        name="'.Config::$name.'['.$key.']" id="'.Config::$name.'_'.$key.'">';
-                    foreach ($value['options'] as $o) {
-                        $out[] = '<option value="'.$o['value'].'" '.($value['default'] == $o['value'] ?
-                            'selected="selected" ' : '').'>'.$o['label'].'</option>';
-                    }
-                    $out[] = '</select>';
-                    break;
-                default:
-                    if (is_array($value['default'])) {
-                        $value['default'] = implode('|', $value['default']);
-                    }
-                    $out[] = '                    <input
+			switch ( $value['type'] ) {
+				case 'title':
+					break;
+				case 'select':
+					$out[] = '<select style="width: 100%;max-width: 20rem;"
+                        name="' . Config::$name . '[' . $key . ']" id="' . Config::$name . '_' . $key . '">';
+					foreach ( $value['options'] as $o ) {
+						$out[] = '<option value="' . $o['value'] . '" ' . ( $value['default'] == $o['value'] ?
+							'selected="selected" ' : '' ) . '>' . $o['label'] . '</option>';
+					}
+					$out[] = '</select>';
+					break;
+				default:
+					if ( is_array( $value['default'] ) ) {
+						$value['default'] = implode( '|', $value['default'] );
+					}
+					$out[] = '                    <input
                         type="text"
                         style="width: 100%;max-width: 20rem;"
-                        name="'.Config::$name.'['.$key.']"
-                        id="'.Config::$name.'_'.$key.'"
-                        value="'.$value['default'].'" '.(
-                        $value['holder'] !== '' ?
-                            'placeholder="'.$value['holder'].'" ' : ''
-                    ).'/>';
-            }
+                        name="' . Config::$name . '[' . $key . ']"
+                        id="' . Config::$name . '_' . $key . '"
+                        value="' . $value['default'] . '" ' . (
+						$value['holder'] !== '' ?
+							'placeholder="' . $value['holder'] . '" ' : ''
+					) . '/>';
+			}
 
+			if ( $value['description'] !== '' ) {
+				$out[] = '                    <p class="description">' . $value['description'] . '</p>';
+			}
 
-            if ($value['description'] !== '') {
-                $out[] = '                    <p class="description">'.$value['description'].'</p>';
-            }
-
-            $out[] = '                </fieldset>
+			$out[] = '                </fieldset>
             </td>
         </tr>';
-        }
+		}
 
-        $out[] = '    </table>
+		$out[] = '    </table>
     <p class="submit">
-	    <input type="hidden" id="mktr_check" name="mktr_check" value="'. \wp_create_nonce('mktr_check') .'" />
-		<button class="button-primary" type="submit" value="'.self::$save_button.'">'.self::$save_button.'</button>
+	    <input type="hidden" id="mktr_check" name="mktr_check" value="' . \wp_create_nonce( 'mktr_check' ) . '" />
+		<button class="button-primary" type="submit" value="' . self::$save_button . '">' . self::$save_button . '</button>
     </p>
 </form>';
 
-        if ($clean) {
-            self::clean();
-        }
+		if ( $clean ) {
+			self::clean();
+		}
 
-        return \ent2ncr(implode(PHP_EOL, $out));
-    }
+		return \ent2ncr( implode( PHP_EOL, $out ) );
+	}
 
-    public static function clean()
-    {
-        self::$form_fields = array();
-    }
+	public static function clean() {
+		self::$form_fields = array();
+	}
 
 
-    public static function pushStatus()
-    {
-        FileSystem::setWorkDirectory('base');
+	public static function pushStatus() {
+		FileSystem::setWorkDirectory( 'base' );
 
-        if (Config::getPushStatus() != 0) {
-            FileSystem::writeFile("firebase-config.js", Config::getFireBase());
-            FileSystem::writeFile("firebase-messaging-sw.js", Config::getFireBaseMessaging());
-        } else {
-            FileSystem::deleteFile("firebase-config.js");
-            FileSystem::deleteFile("firebase-messaging-sw.js");
-        }
-    }
+		if ( Config::getPushStatus() != 0 ) {
+			FileSystem::writeFile( 'firebase-config.js', Config::getFireBase() );
+			FileSystem::writeFile( 'firebase-messaging-sw.js', Config::getFireBaseMessaging() );
+		} else {
+			FileSystem::deleteFile( 'firebase-config.js' );
+			FileSystem::deleteFile( 'firebase-messaging-sw.js' );
+		}
+	}
 }

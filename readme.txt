@@ -2,7 +2,7 @@
 Contributors: themarketer2023
 Tags: WordPress, theMarketer, Email marketing, Loyalty Program
 Requires at least: 4.6
-Tested up to: 6.3
+Tested up to: 6.4.2
 Requires PHP: 5.6
 Stable tag: 1.0.0
 License: GPLv2

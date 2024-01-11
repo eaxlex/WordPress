@@ -11,134 +11,124 @@
 
 namespace MktrWp\Tracker;
 
-class FileSystem
-{
-    private static $path = null;
-    private static $lastPath = null;
-    private static $status = array();
-    private static $useRoot = false;
+class FileSystem {
 
-    private static $init = null;
+	private static $path     = null;
+	private static $lastPath = null;
+	private static $status   = array();
+	private static $useRoot  = false;
 
-    public static function init() {
-        if (self::$init == null) {
-            self::$init = new self();
-        }
-        return self::$init;
-    }
+	private static $init = null;
 
-    /** @noinspection PhpUnused */
-    public static function setWorkDirectory($name = 'Storage')
-    {
-        
-        if ($name != 'base' && !self::$useRoot)
-        {
-            self::$path = Config::getDir() . $name . "/";
-        } else {
-            self::$path = ABSPATH;
-        }
+	public static function init() {
+		if ( self::$init == null ) {
+			self::$init = new self();
+		}
+		return self::$init;
+	}
 
-        return self::init();
-    }
+	/** @noinspection PhpUnused */
+	public static function setWorkDirectory( $name = 'Storage' ) {
 
-    /** @noinspection PhpUnused */
-    public static function writeFile($fName, $content, $mode = 'w+')
-    {
-        $path = self::getPath();
+		if ( $name != 'base' && ! self::$useRoot ) {
+			self::$path = Config::getDir() . $name . '/';
+		} else {
+			self::$path = ABSPATH;
+		}
 
-        if (!file_exists($path)) { wp_mkdir_p($path); }
+		return self::init();
+	}
 
-        self::$lastPath = $path . $fName;
-        file_put_contents(self::$lastPath, $content);
+	/** @noinspection PhpUnused */
+	public static function writeFile( $fName, $content, $mode = 'w+' ) {
+		global $wp_filesystem;
+		$path = self::getPath();
 
-        /*
-        $file = fopen(self::$lastPath, $mode);
-        fwrite($file, $content);
-        fclose($file);
-        */
+		if ( ! file_exists( $path ) ) {
+			wp_mkdir_p( $path ); }
 
-        self::$status[] = [
-            'path' => $path,
-            'fileName' => $fName,
-            'fullPath' => self::$lastPath,
-            'status' => true
-        ];
+		self::$lastPath = $path . $fName;
 
-        return self::init();
-    }
+		$wp_filesystem->put_contents( self::$lastPath, $content, FS_CHMOD_FILE );
 
-    /** @noinspection PhpUnused */
-    public static function rFile($fName, $mode = "rb")
-    {
-        self::$lastPath = self::getPath() . $fName;
+		/*
+		// file_put_contents( self::$lastPath, $content );
+		$file = fopen(self::$lastPath, $mode);
+		fwrite($file, $content);
+		fclose($file);
+		*/
 
-        if(self::fileExists($fName))
-        {
-            $file = fopen(self::$lastPath, $mode);
+		self::$status[] = array(
+			'path'     => $path,
+			'fileName' => $fName,
+			'fullPath' => self::$lastPath,
+			'status'   => true,
+		);
 
-            $contents = fread($file, filesize(self::$lastPath));
+		return self::init();
+	}
 
-            fclose($file);
-        } else {
-            $contents = '';
-        }
+	/** @noinspection PhpUnused */
+	public static function rFile( $fName, $mode = 'rb' ) {
+		self::$lastPath = self::getPath() . $fName;
 
-        return $contents;
-    }
+		if ( self::fileExists( $fName ) ) {
+			$file = fopen( self::$lastPath, $mode );
 
-    /** @noinspection PhpUnused */
-    public static function readFile($fName, $mode = "rb")
-    {
-        $contents = '';
-        self::$lastPath = self::getPath() . $fName;
+			$contents = fread( $file, filesize( self::$lastPath ) );
 
-        if(self::fileExists($fName))
-        {
-            $file = fopen(self::$lastPath, $mode);
+			fclose( $file );
+		} else {
+			$contents = '';
+		}
 
-            $contents = fread($file, filesize(self::$lastPath));
+		return $contents;
+	}
 
-            fclose($file);
-        }
+	/** @noinspection PhpUnused */
+	public static function readFile( $fName, $mode = 'rb' ) {
+		$contents       = '';
+		self::$lastPath = self::getPath() . $fName;
 
-        return $contents;
-    }
+		if ( self::fileExists( $fName ) ) {
+			$file = fopen( self::$lastPath, $mode );
 
-    /** @noinspection PhpUnused */
-    public static function fileExists($fName)
-    {
-        return file_exists(self::getPath() . $fName);
-    }
+			$contents = fread( $file, filesize( self::$lastPath ) );
 
-    /** @noinspection PhpUnused */
-    public static function deleteFile($fName)
-    {
-        self::$lastPath = self::getPath() . $fName;
+			fclose( $file );
+		}
 
-        if(self::fileExists($fName))
-        {
-            unlink(self::$lastPath);
-        }
-        return true;
-    }
+		return $contents;
+	}
 
-    public static function getPath()
-    {
-        if (self::$path == null)
-        {
-            self::setWorkDirectory();
-        }
-        return self::$path;
-    }
+	/** @noinspection PhpUnused */
+	public static function fileExists( $fName ) {
+		return file_exists( self::getPath() . $fName );
+	}
 
-    /** @noinspection PhpUnused */
-    public static function getLastPath()
-    {
-        return self::$lastPath;
-    }
+	/** @noinspection PhpUnused */
+	public static function deleteFile( $fName ) {
+		self::$lastPath = self::getPath() . $fName;
 
-    public static function getStatus()
-    {
-        return self::$status;
-    }
+		if ( self::fileExists( $fName ) ) {
+			unlink( self::$lastPath );
+		}
+		return true;
+	}
+
+	public static function getPath() {
+		if ( self::$path == null ) {
+			self::setWorkDirectory();
+		}
+		return self::$path;
+	}
+
+	/** @noinspection PhpUnused */
+	public static function getLastPath() {
+		return self::$lastPath;
+	}
+
+	public static function getStatus() {
+		return self::$status;
+	}
 }

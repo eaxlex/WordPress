@@ -1,45 +1,49 @@
 <?php
 /**
- * @copyright   Copyright (c) 2023 TheMarketer.com
- * @project     TheMarketer.com
- * @website     https://themarketer.com/
- * @author      Alexandru Buzica (EAX LEX S.R.L.) <b.alex@eax.ro>
- * @license     https://opensource.org/licenses/osl-3.0.php - Open Software License (OSL 3.0)
- * @docs        https://themarketer.com/resources/api
+ * Plugin Name:             TheMarketer WP
+ * Plugin URI:              https://themarketer.com/integrations/wordpress
+ * Description:             TheMarketer - WordPress Version
+ * Version:                 1.0.0
+ * Author:                  themarketer.com
+ * Author URI:              https://themarketer.com
+ * Text Domain:             mktr-wp
+ * License:                 GPL2
+ * License URI:             https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * @package mktr-wp
  */
 
 namespace MktrWp\Tracker\Routes;
 
 use MktrWp\Tracker\Session;
 
-class clearEvents
-{
-    private static $init = null;
+class clearEvents {
 
-    public static function init()
-    {
-        if (self::$init == null) {
-            self::$init = new self();
-        }
-        return self::$init;
-    }
+	private static $init = null;
 
-    public static function execute()
-    {
-        $eventData = Session::get("ClearMktr");
+	public static function init() {
+		if ( self::$init == null ) {
+			self::$init = new self();
+		}
+		return self::$init;
+	}
 
-        if (!empty($eventData)) {
-            foreach ($eventData as $key => $value) {
-                $eventData1 = Session::get($key);
-                foreach ($value as $value1) { unset($eventData1[$value1]); }
-                Session::set($key, $eventData1);
-            }
+	public static function execute() {
+		$eventData = Session::get( 'ClearMktr' );
 
-            Session::set("ClearMktr", array());
-        }
+		if ( ! empty( $eventData ) ) {
+			foreach ( $eventData as $key => $value ) {
+				$eventData1 = Session::get( $key );
+				foreach ( $value as $value1 ) {
+					unset( $eventData1[ $value1 ] ); }
+				Session::set( $key, $eventData1 );
+			}
 
-		$r = "console.log(2);";
-        
-        return "";
-    }
+			Session::set( 'ClearMktr', array() );
+		}
+
+		$r = 'console.log(2);';
+
+		return '';
+	}
 }
