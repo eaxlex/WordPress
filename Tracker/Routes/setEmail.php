@@ -83,6 +83,7 @@ class setEmail {
 		}
 
 		if ( $allGood ) {
+			/* TODO setPhone */
 			Session::set( 'setPhone', array() );
 			Session::set( 'setEmail', array() );
 		}

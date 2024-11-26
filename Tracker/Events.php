@@ -24,15 +24,13 @@ class Events {
 	);
 
 	public const observerGetEvents = array(
-		'setEmail' => array( true, '__sm__set_email' ),
-		'setPhone' => array( false, '__sm__set_phone' ),
+		'setEmail' => array( true, '__sm__set_email' )
 	);
 
 	public const eventsName = array(
 		'__sm__view_homepage' => 'HomePage',
 		'__sm__search'        => 'Search',
-		'__sm__set_email'     => 'setEmail',
-		'__sm__set_phone'     => 'setPhone',
+		'__sm__set_email'     => 'setEmail'
 	);
 
 	public const eventsSchema = array(
@@ -40,15 +38,11 @@ class Events {
 		'Search'   => array(
 			'search_term' => 'search_term',
 		),
-
-		'setPhone' => array(
-			'phone' => 'phone',
-		),
-
 		'setEmail' => array(
 			'email_address' => 'email_address',
 			'firstname'     => 'firstname',
 			'lastname'      => 'lastname',
+			'phone' => 'phone'
 		),
 	);
 	/**
